@@ -3,65 +3,30 @@
   <head>
     <meta charset="UTF-8">
     <title>About Claudia</title>
-    <link rel="stylesheet" href="aboutme.css">
-        <script src="script.js"></script>
-      <style>
-        body {margin:0;}
-
-        ul {
-        list-style-type: none;
-        margin: 0;
-        padding: 0;
-        overflow: hidden;
-        background-color: #333;
-        position: fixed;
-        bottom: 0;
-        width: 100%;
-        }
-
-        li {
-        float: left;
-        }
-
-        li a {
-        display: block;
-        color: white;
-        text-align: center;
-        padding: 14px 16px;
-        text-decoration: none;
-        }
-
-        li a:hover:not(.active) {
-        background-color: #111;
-        }
-
-        .active {
-        background-color: #4CAF50;
-        }
-    </style>
+    <link rel="stylesheet" href="style.css">
+    <script src="script.js"></script>
   </head>
   <body>
-      <ul>
-        <li><a class="active" href="index.html">Home</a></li>
-        <li><a href="resume.html">Resume</a></li>
-        <li><a href="aboutme.html">About</a></li>
-        <li><a href="mailto:cjcoulibaly@gmail.com" target="_blank">Contact Me</a></li>
+    <ul>
+      <li><a href="index.html">Home</a></li>
+      <li><a href="resume.html">Resume</a></li>
+      <li><a class="active" href="aboutme.html">About</a></li>
+      <li><a href="slideshow.html">Slideshow</a></li>
+      <li><a href="mailto:cjcoulibaly@gmail.com" target="_blank">Contact Me</a></li>
     </ul>
     <div id="content">
-      <h2> About me: </h2>
-      <p>Claudia is a student at the University of Washington, majoring in Computer Science and minoring in ELS (Education, Learning and Society). </p>
-      <p> In her free time, she loves to dance, sing along to throwbacks, and spend time with family. <p>
-      <p> Growing up, Claudia wanted to be a star. She loved to act, sing, and perform. However, once she began High School, she found a new passion in leadership. 
+      <h2>About me:</h2>
+      <p>Claudia is a student at the University of Washington, majoring in Computer Science and minoring in ELS (Education, Learning and Society).</p>
+      <p>In her free time, she loves to dance, sing along to throwbacks, and spend time with family.<p>
+      <p>Growing up, Claudia wanted to be a star. She loved to act, sing, and perform. However, once she began High School, she found a new passion in leadership. 
           She excelled in Student Government, becoming Vice President during her senior year, and was a Varsity Cheerleader. She was also on the Varsity Golf Team.
-          While she still loves acting/singing/modeling, she is now invested in learning about technology. <p>
-        
-        <p>Click here to get a random fact about Claudia:</p>
-      <button onclick="addRandomFact()">Favorite ...</button>
+          While she still loves acting/singing/modeling, she is now invested in learning about technology.<p> 
+      <p>Click here to get a random fact about Claudia:</p>
+      <button onclick="addRandomFact()">Favorite...</button>
       <div id="fact-container"></div>
-      <img src="images/me4.jpg" style="float: left; width: 30%; margin-right: 0.1%; margin-bottom: 0.5em;">
-      <img src="images/IMG_6149.JPG" style="float: left; width: 30%; margin-right: 0.1%; margin-bottom: 0.5em;">
-      <img src="images/me6.JPG" style="float: left; width: 30%; margin-right: 0.1%; margin-bottom: 0.5em;">
-      
+      <img src="images/me4.jpg" style="float: left; width: 30%; margin-right: .1%; margin-bottom: .5em;">
+      <img src="images/IMG_6149.JPG" style="float: left; width: 30%; margin-right: .1%; margin-bottom: .5em;">
+      <img src="images/me6.JPG" style="float: left; width: 30%; margin-right: .1%; margin-bottom: .5em;">
     </div>
   </body>
 </html>
