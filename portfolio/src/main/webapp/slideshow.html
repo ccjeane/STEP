@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Slideshow</title>
+    <link rel="stylesheet" href="style.css">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+* {box-sizing: border-box}
+body {font-family: Verdana, sans-serif; margin:0}
+.mySlides {display: none}
+img {vertical-align: middle;}
+
+/* Slideshow container */
+.slideshow-container {
+  max-width: 1000px;
+  position: relative;
+  margin: auto;
+}
+
+/* Fading animation */
+.fade {
+  -webkit-animation-name: fade;
+  -webkit-animation-duration: 1.5s;
+  animation-name: fade;
+  animation-duration: 1.5s;
+}
+
+@-webkit-keyframes fade {
+  from {opacity: .4} 
+  to {opacity: 1}
+}
+
+@keyframes fade {
+  from {opacity: .4} 
+  to {opacity: 1}
+}
+
+/* On smaller screens, decrease text size */
+@media only screen and (max-width: 300px) {
+  .prev, .next,.text {font-size: 11px}
+}
+</style>
+</head>
+<body>
+  <ul>
+    <li><a href="index.html">Home</a></li>
+    <li><a href="resume.html">Resume</a></li>
+    <li><a href="aboutme.html">About</a></li>
+    <li><a href="slideshow.html">Slideshow</a></li>
+    <li><a href="mailto:cjcoulibaly@gmail.com" target="_blank">Contact Me</a></li>
+  </ul>
+
+<div class="slideshow-container">
+
+<div class="mySlides fade">
+  <img src="images/noah1.jpg" style="width:100%">
+</div>
+
+<div class="mySlides fade">
+  <img src="images/fam1.jpg" style="width:50%">
+</div>
+
+<div class="mySlides fade">
+  <img src="images/mom1.jpg" style="width:60%">
+</div>
+
+<div class="mySlides fade">
+  <img src="images/noah2.jpg" style="width:100%">
+</div>
+
+<div class="mySlides fade">
+  <img src="images/fam2.jpg" style="width:60%">
+</div>
+
+<div class="mySlides fade">
+  <img src="images/brothers.jpg" style="width:80%">
+</div>
+</div>
+<br>
+
+<script>
+var slideIndex = 0;
+showSlides();
+
+function showSlides() {
+  var i;
+  var slides = document.getElementsByClassName("mySlides");
+  for (i = 0; i < slides.length; i++) {
+    slides[i].style.display = "none";  
+  }
+  slideIndex++;
+  if (slideIndex > slides.length) {slideIndex = 1}    
+  slides[slideIndex-1].style.display = "block";  
+  setTimeout(showSlides, 2000); // Change image every 2 seconds
+}
+</script>
+</body>
+</html> 
