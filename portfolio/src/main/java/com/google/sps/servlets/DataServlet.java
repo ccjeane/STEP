@@ -25,30 +25,39 @@ import javax.servlet.http.HttpServletResponse;
 /** Servlet that returns some example content. TODO: modify this file to handle comments data */
 @WebServlet("/data")
 public class DataServlet extends HttpServlet {
-  private List<String> people;
+  private List<String> comments;
 
   @Override
   public void init() {
-    people = new ArrayList<>();
-    people.add("Claudia");
-    people.add("Kelly");
-    people.add("Keenan");
-    people.add("Noah");
-    people.add("Christy");
-    people.add("Brenda");
-    people.add("Bob");
-    people.add("Isaiah");
-    people.add("Alexa");
+    comments = new ArrayList<>();
   }
 
   @Override
   public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
-    String greeting = "Hello " + people.get((int) (Math.random() * people.size()));
-    
-    Gson gson = new Gson();
-    String json = gson.toJson(greeting);
-    
-    response.setContentType("text/html");
+    response.setContentType("application/json");
+    String json = new Gson().toJson(comments);
     response.getWriter().println(json);
+  }
+
+    @Override
+  public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
+
+    // Get the input from the form...
+    // Not fully sure how to implement this quite yet
+
+    // Redirect back to the HTML page.
+    response.sendRedirect("/comment.html");
+  }
+
+  /**
+   * @return the request parameter, or the default value if the parameter
+   *         was not specified by the client
+   */
+  private String getParameter(HttpServletRequest request, String name, String defaultValue) {
+    String value = request.getParameter(name);
+    if (value == null) {
+      return defaultValue;
+    }
+    return value;
   }
 }
