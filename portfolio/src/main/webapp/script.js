@@ -20,7 +20,7 @@ function addRandomFact() {
       ['Movie: The Lion King', 'Color: Burgundy', 'Show: How I Met Your Mother / Criminal Minds', 'Food: Spaghetti', 'Drink: Iced Coffee',
         'Time of Day: Morning', 'Season: Late Spring', 'Place visited: Italy or Hawaii', 'Music Genre: Hip hop',
         'Rapper: Drake', 'Scenery: Beach', 'Activity: Photography', 'Sport with a ball: Golf', 'Sport without a ball: Cheerleading/Gymnastics',
-        'Shoes: Nike Air Force One\'s (Look at the pics, couldn\'t you tell?)'];
+        'Shoes: Nike Air Force One\'s'];
 
   // Pick a random greeting.
   const fact = facts[Math.floor(Math.random() * facts.length)];
@@ -28,4 +28,10 @@ function addRandomFact() {
   // Add it to the page.
   const factContainer = document.getElementById('fact-container');
   factContainer.innerText = fact;
+}
+
+function getData() {
+  const response = await fetch('/data');
+  const hello = await response.text();
+  document.getElementById('data-container').innerText = hello;
 }
