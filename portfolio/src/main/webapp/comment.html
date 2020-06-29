@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <title>Comments</title>
+    <link rel="stylesheet" href="style.css">
+  </head>
+  <body onload="getData()">
+    <ul>
+      <li><a href="index.html">Home</a></li>
+      <li><a href="resume.html">Resume</a></li>
+      <li><a href="aboutme.html">About Claudia</a></li>
+      <li><a href="slideshow.html">Slideshow</a></li>
+      <li><a href="shows.html">TV</a></li>
+      <li><a class="active" href="comment.html">Feedback</a></li>
+      <li><a href="mailto:cjcoulibaly@gmail.com" target="_blank">Contact Me</a></li>
+    </ul>
+    <h1>Comment form</h1>
+
+    <form action="/data" method="POST">
+
+      <p>Subtract:</p>
+      <input type="number" name="player-choice" min="1" max="3" value="1">
+      <br/><br/>
+
+      <input type="submit" />
+    </form>
+
+    <ul id="history"></ul>    
+    <p>This comment is here so that the button/answer is not covered by the navbar</p>
+  </body>
+</html>
