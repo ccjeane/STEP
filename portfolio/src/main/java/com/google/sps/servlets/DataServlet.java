@@ -17,6 +17,9 @@ package com.google.sps.servlets;
 import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.DatastoreServiceFactory;
 import com.google.appengine.api.datastore.Entity;
+import com.google.appengine.api.datastore.PreparedQuery;
+import com.google.appengine.api.datastore.Query;
+import com.google.appengine.api.datastore.Query.SortDirection;
 import com.google.sps.data.Comment;
 import java.util.*;
 import java.io.IOException;
@@ -30,10 +33,22 @@ import javax.servlet.http.HttpServletResponse;
 @WebServlet("/data")
 public class DataServlet extends HttpServlet {
   
-  private Comment comments = new Comment();
-
   @Override
   public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
+    Query query = new Query("Comment").addSort("date", SortDirection.DESCENDING);
+
+    DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
+    PreparedQuery results = datastore.prepare(query);
+
+    List<String> comments = new ArrayList<>();
+    for (Entity entity : results.asIterable()) {
+      long id = entity.getKey().getId();
+      String message = (String) entity.getProperty("comment");
+      Date timestamp = (Date) entity.getProperty("date");
+
+      comments.add(message + " - " + timestamp);
+    }
+
     response.setContentType("application/json");
     String json = new Gson().toJson(comments);
     response.getWriter().println(json);
@@ -53,7 +68,7 @@ public class DataServlet extends HttpServlet {
 
     DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
     datastore.put(commentEntity);
-    // Redirect back to the HTML page.
+    // Redirect back to the same page
     response.sendRedirect("/comment.html");
   }
 
