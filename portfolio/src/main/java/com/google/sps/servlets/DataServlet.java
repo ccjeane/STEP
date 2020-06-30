@@ -14,6 +14,9 @@
 
 package com.google.sps.servlets;
 
+import com.google.appengine.api.datastore.DatastoreService;
+import com.google.appengine.api.datastore.DatastoreServiceFactory;
+import com.google.appengine.api.datastore.Entity;
 import com.google.sps.data.Comment;
 import java.util.*;
 import java.io.IOException;
@@ -43,8 +46,13 @@ public class DataServlet extends HttpServlet {
     // Not fully sure how to implement this quite yet
     String newComment = request.getParameter("new-comment");
 
-    comments.leaveComment(newComment);
+    //comments.leaveComment(newComment);
+    Entity commentEntity = new Entity("Comment");
+    commentEntity.setProperty("comment", newComment);
+    commentEntity.setProperty("date", new Date());
 
+    DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
+    datastore.put(commentEntity);
     // Redirect back to the HTML page.
     response.sendRedirect("/comment.html");
   }
