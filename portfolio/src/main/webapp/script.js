@@ -35,9 +35,9 @@ function addRandomFact() {
  */
 function loadComments() {
   fetch('/data').then(response => response.json()).then((comments) => {
-    // Build the list of history entries.
+    // Build the list of comments
     const historyEl = document.getElementById('history');
-    comments.history.forEach((line) => {
+    comments.forEach((line) => {
       historyEl.appendChild(createListElement(line));
     });
   });
