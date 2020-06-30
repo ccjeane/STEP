@@ -30,25 +30,24 @@ function addRandomFact() {
   factContainer.innerText = fact;
 }
 
-function loadComments() {
-  fetch('/loadcomments').then(response => response.json()).then((comments) => {
-    const commentListElement = document.getElementById('comment-list');
-    comments.forEach((comment) => {
-      commentListElement.appendChild(createCommentElement(comment));
-    })
+/**
+ * Fetches the current state of the game and builds the UI.
+ */
+function getSubtractionGame() {
+  fetch('/data').then(response => response.json()).then((comments) => {
+    // Build the list of history entries.
+    const historyEl = document.getElementById('history');
+    comments.history.forEach((line) => {
+      historyEl.appendChild(createListElement(line));
+    });
   });
 }
 
-/** Creates an element that represents a comment. */
-function createCommentElement(comment) {
-  const commentElement = document.createElement('li');
-  commentElement.className = 'comment';
-
-  const titleElement = document.createElement('span');
-  titleElement.innerText = comment.title;
-
-  taskElement.appendChild(titleElement);
-  taskElement.appendChild(deleteButtonElement);
-  return taskElement;
+/** Creates an <li> element containing text. */
+function createListElement(text) {
+  const liElement = document.createElement('li');
+  liElement.innerText = text;
+  return liElement;
 }
+
 
