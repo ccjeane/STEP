@@ -33,7 +33,7 @@ function addRandomFact() {
 /**
  * Fetches the current state of the game and builds the UI.
  */
-function getSubtractionGame() {
+function loadComments() {
   fetch('/data').then(response => response.json()).then((comments) => {
     // Build the list of history entries.
     const historyEl = document.getElementById('history');
