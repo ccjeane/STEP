@@ -26,13 +26,7 @@ import javax.servlet.http.HttpServletResponse;
 /** Servlet that returns some example content. TODO: modify this file to handle comments data */
 @WebServlet("/data")
 public class DataServlet extends HttpServlet {
-  //private List<String> comments;
-
-  @Override
-  public void init() {
-    //comments = new ArrayList<>();
-  }
-
+  
   private Comment comments = new Comment();
 
   @Override
