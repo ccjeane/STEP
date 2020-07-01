@@ -20,7 +20,6 @@ import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.datastore.PreparedQuery;
 import com.google.appengine.api.datastore.Query;
 import com.google.appengine.api.datastore.Query.SortDirection;
-import com.google.sps.data.Comment;
 import java.util.*;
 import java.io.IOException;
 import com.google.gson.Gson;
@@ -33,6 +32,8 @@ import javax.servlet.http.HttpServletResponse;
 @WebServlet("/data")
 public class DataServlet extends HttpServlet {
   
+  private int quantity;
+
   @Override
   public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
     Query query = new Query("Comment").addSort("date", SortDirection.DESCENDING);
@@ -41,12 +42,18 @@ public class DataServlet extends HttpServlet {
     PreparedQuery results = datastore.prepare(query);
 
     List<String> comments = new ArrayList<>();
+    if (quantity == 0){ quantity = 10; } //Default set at max of 10 comments shown upon loading screen
+    int i = 0;
     for (Entity entity : results.asIterable()) {
-      long id = entity.getKey().getId();
-      String message = (String) entity.getProperty("comment");
-      Date timestamp = (Date) entity.getProperty("date");
-
-      comments.add(message + " - " + timestamp);
+      if (i < quantity){ //Limits number of comments added to the page
+        long id = entity.getKey().getId();
+        String message = (String) entity.getProperty("comment");
+        Date timestamp = (Date) entity.getProperty("date");
+        comments.add(message + " - " + timestamp);
+        i++;
+      }else {
+        break; //Exits for-loop once requested number of comments appear
+      }
     }
 
     response.setContentType("application/json");
@@ -54,15 +61,26 @@ public class DataServlet extends HttpServlet {
     response.getWriter().println(json);
   }
 
-    @Override
+  @Override
   public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
-    String newComment = request.getParameter("new-comment");
-    Entity commentEntity = new Entity("Comment");
-    commentEntity.setProperty("comment", newComment);
-    commentEntity.setProperty("date", new Date());
 
-    DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
-    datastore.put(commentEntity);
+    String newComment = request.getParameter("new-comment");
+    String quant = request.getParameter("quantity");
+
+    try {
+      quantity = Integer.parseInt(quant);
+    } catch (NumberFormatException e) {
+      quantity = 10; //default set at 10 comments
+    }
+
+    if (newComment != null && newComment.length() > 0){
+        Entity commentEntity = new Entity("Comment");
+        commentEntity.setProperty("comment", newComment);
+        commentEntity.setProperty("date", new Date());
+
+        DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
+        datastore.put(commentEntity);
+    }
     // Redirect back to the same page
     response.sendRedirect("/comment.html");
   }
