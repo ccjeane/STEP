@@ -57,7 +57,6 @@ public class DataServlet extends HttpServlet {
     @Override
   public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
     String newComment = request.getParameter("new-comment");
-
     Entity commentEntity = new Entity("Comment");
     commentEntity.setProperty("comment", newComment);
     commentEntity.setProperty("date", new Date());
