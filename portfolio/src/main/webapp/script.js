@@ -47,5 +47,22 @@ function loadComments() {
 function createListElement(text) {
   const pElement = document.createElement("p");
   pElement.innerText = text;
+
+  const deleteButtonElement = document.createElement('button');
+  deleteButtonElement.innerText = 'Delete';
+  deleteButtonElement.addEventListener('click', () => {
+    deleteComment(text);
+
+    // Remove the comment from the DOM.
+    pElement.remove();
+  });
+
+  pElement.appendChild(deleteButtonElement);
   return pElement;
+}
+
+function deleteComment(comment) {
+  const params = new URLSearchParams();
+  params.append('id', comment.id);
+  fetch('/delete-data', {method: 'POST', body: params});
 }
