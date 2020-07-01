@@ -43,11 +43,9 @@ function loadComments() {
   });
 }
 
-/** Creates an <li> element containing text. */
+/** Creates an paragraph element containing text. */
 function createListElement(text) {
-  const liElement = document.createElement('li');
-  liElement.innerText = text;
-  return liElement;
+  const pElement = document.createElement("p");
+  pElement.innerText = text;
+  return pElement;
 }
-
-
