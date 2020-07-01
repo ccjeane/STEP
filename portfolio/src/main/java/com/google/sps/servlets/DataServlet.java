@@ -39,6 +39,8 @@ public class DataServlet extends HttpServlet {
     @Override
   public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
 
+    //TODO: get input from form
+
     String newComment = request.getParameter("new-comment");
 
     comments.leaveComment(newComment);
