@@ -51,7 +51,8 @@ function createListElement(text) {
   const deleteButtonElement = document.createElement('button');
   deleteButtonElement.innerText = 'Delete';
   deleteButtonElement.addEventListener('click', () => {
-    deleteComment(comment);
+    deleteComment(text);
+
     // Remove the comment from the DOM.
     pElement.remove();
   });
@@ -64,4 +65,4 @@ function deleteComment(comment) {
   const params = new URLSearchParams();
   params.append('id', comment.id);
   fetch('/delete-data', {method: 'POST', body: params});
-} 
+}

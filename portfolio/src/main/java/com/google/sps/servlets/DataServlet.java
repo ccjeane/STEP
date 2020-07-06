@@ -32,8 +32,7 @@ import javax.servlet.http.HttpServletResponse;
 @WebServlet("/data")
 public class DataServlet extends HttpServlet {
   
-  private int quantity; //Keeps track of number of desired comments
-
+  private int quantity;
 
   @Override
   public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
@@ -71,7 +70,7 @@ public class DataServlet extends HttpServlet {
     try {
       quantity = Integer.parseInt(quant);
     } catch (NumberFormatException e) {
-      quantity = 10; // default set at 10 comments
+      quantity = 10; //default set at 10 comments
     }
 
     if (newComment != null && newComment.length() > 0){
