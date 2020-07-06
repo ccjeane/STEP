@@ -59,3 +59,9 @@ function createListElement(text) {
   pElement.appendChild(deleteButtonElement);
   return pElement;
 }
+
+function deleteComment(comment) {
+  const params = new URLSearchParams();
+  params.append('id', comment.id);
+  fetch('/delete-data', {method: 'POST', body: params});
+} 
