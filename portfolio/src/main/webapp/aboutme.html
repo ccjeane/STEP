@@ -6,6 +6,9 @@
     <link rel="stylesheet" href="style.css">
     <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDJAUW6YELALgTBeLgn8SY9xxAYspwwrdc"></script>
     <script src="script.js"></script>
+    <script async defer
+      src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDJAUW6YELALgTBeLgn8SY9xxAYspwwrdc&callback=initMap">
+    </script>
   </head>
   <body onload="createMap();">
     <ul>
@@ -31,7 +34,9 @@
       <img src="images/me4.jpg" style="float: left; width: 30%; margin-right: .1%; margin-bottom: .5em;">
       <img src="images/IMG_6149.JPG" style="float: left; width: 30%; margin-right: .1%; margin-bottom: .5em;">
       <img src="images/me6.JPG" style="float: left; width: 30%; margin-right: .1%; margin-bottom: .5em;">
+      <p style="clear: both;">
+      <div id="map"></div>
     </div>
-    <div id="map"></div>
+
   </body>
 </html>
