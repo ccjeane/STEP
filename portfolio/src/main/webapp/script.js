@@ -65,3 +65,9 @@ function deleteComment(comment) {
   params.append('id', comment.id);
   fetch('/delete-data', {method: 'POST', body: params});
 }
+
+function createMap() {
+  const map = new google.maps.Map(
+      document.getElementById('map'),
+      {center: {lat: 47.5667, lng: -122.3868}, zoom: 16}); // West Seattle
+}
