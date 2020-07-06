@@ -71,7 +71,7 @@ public class DataServlet extends HttpServlet {
     try {
       quantity = Integer.parseInt(quant);
     } catch (NumberFormatException e) {
-      quantity = 10; //default set at 10 comments
+      quantity = 10; // default set at 10 comments
     }
 
     if (newComment != null && newComment.length() > 0){

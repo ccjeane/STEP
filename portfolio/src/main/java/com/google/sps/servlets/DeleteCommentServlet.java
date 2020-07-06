@@ -29,11 +29,12 @@ public class DeleteCommentServlet extends HttpServlet {
     PreparedQuery results = datastore.prepare(query);
 
     Key commentEntityKey = null;
-    for (Entity entity : results.asIterable()) {
+    for (Entity entity : results.asIterable()) { // Find key that matches ID that needs to be deleted
       if (id == entity.getKey().getId()){ 
         commentEntityKey = entity.getKey();
       }
     }
+
     datastore.delete(commentEntityKey);
   }
 }
