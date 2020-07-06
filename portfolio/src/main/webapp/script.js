@@ -46,13 +46,12 @@ function loadComments() {
 /** Creates an paragraph element containing text. */
 function createListElement(text) {
   const pElement = document.createElement("p");
-  pElement.innerText = text.comment;
+  pElement.innerText = text.comment + " - " + text.timestamp;
 
   const deleteButtonElement = document.createElement('button');
   deleteButtonElement.innerText = 'Delete';
   deleteButtonElement.addEventListener('click', () => {
     deleteComment(text);
-
     // Remove the comment from the DOM.
     pElement.remove();
   });
