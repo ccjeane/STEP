@@ -47,7 +47,6 @@ function loadComments() {
 function createListElement(text) {
   const pElement = document.createElement("p");
   pElement.innerText = text;
-  pElement.className = 'comment';
 
   const deleteButtonElement = document.createElement('button');
   deleteButtonElement.innerText = 'Delete';
@@ -63,6 +62,6 @@ function createListElement(text) {
 
 function deleteComment(comment) {
   const params = new URLSearchParams();
-  params.append('id', comment.Key);
+  params.append('id', comment.id);
   fetch('/delete-data', {method: 'POST', body: params});
 }
