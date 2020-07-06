@@ -47,12 +47,12 @@ function loadComments() {
 function createListElement(text) {
   const pElement = document.createElement("p");
   pElement.innerText = text;
+  pElement.className = 'comment';
 
   const deleteButtonElement = document.createElement('button');
   deleteButtonElement.innerText = 'Delete';
   deleteButtonElement.addEventListener('click', () => {
-    deleteComment(text);
-
+    deleteComment(comment);
     // Remove the comment from the DOM.
     pElement.remove();
   });
@@ -63,6 +63,6 @@ function createListElement(text) {
 
 function deleteComment(comment) {
   const params = new URLSearchParams();
-  params.append('id', comment.id);
+  params.append('id', comment.Key);
   fetch('/delete-data', {method: 'POST', body: params});
 }

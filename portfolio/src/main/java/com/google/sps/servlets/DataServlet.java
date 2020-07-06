@@ -32,7 +32,8 @@ import javax.servlet.http.HttpServletResponse;
 @WebServlet("/data")
 public class DataServlet extends HttpServlet {
   
-  private int quantity;
+  private int quantity; //Keeps track of number of desired comments
+
 
   @Override
   public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
