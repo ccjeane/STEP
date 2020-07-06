@@ -46,7 +46,7 @@ function loadComments() {
 /** Creates an paragraph element containing text. */
 function createListElement(text) {
   const pElement = document.createElement("p");
-  pElement.innerText = text;
+  pElement.innerText = text.comment;
 
   const deleteButtonElement = document.createElement('button');
   deleteButtonElement.innerText = 'Delete';

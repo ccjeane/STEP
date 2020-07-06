@@ -20,6 +20,7 @@ import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.datastore.PreparedQuery;
 import com.google.appengine.api.datastore.Query;
 import com.google.appengine.api.datastore.Query.SortDirection;
+import com.google.sps.data.Comment;
 import java.util.*;
 import java.io.IOException;
 import com.google.gson.Gson;
@@ -41,7 +42,7 @@ public class DataServlet extends HttpServlet {
     DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
     PreparedQuery results = datastore.prepare(query);
 
-    List<String> comments = new ArrayList<>();
+    List<Comment> comments = new ArrayList<>();
     if (quantity == 0){ quantity = 10; } // Default set at max of 10 comments shown upon loading screen
     int i = 0;
     for (Entity entity : results.asIterable()) {
@@ -49,7 +50,7 @@ public class DataServlet extends HttpServlet {
         long id = entity.getKey().getId();
         String message = (String) entity.getProperty("comment");
         Date timestamp = (Date) entity.getProperty("date");
-        comments.add(message + " - " + timestamp);
+        comments.add(new Comment(id, message, timestamp));
         i++;
       }else {
         break; // Exits for-loop once requested number of comments appear
