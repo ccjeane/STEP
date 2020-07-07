@@ -34,6 +34,12 @@ public class DataServlet extends HttpServlet {
 
   // Keeps track of number of desired comments to be shown 
   private int quantity; 
+  private boolean set;
+
+  @Override
+  public void init(){
+      set = false;
+  }
   
   @Override
   public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
@@ -43,7 +49,7 @@ public class DataServlet extends HttpServlet {
     PreparedQuery results = datastore.prepare(query);
 
     List<String> comments = new ArrayList<>();
-    if (quantity == 0) { quantity = 10; }  // Default set at max of 10 comments shown upon loading screen
+    if (!set) { quantity = 10; }  // Default set at max of 10 comments shown upon loading screen
     int i = 0;
     for (Entity entity : results.asIterable()) {
       // Limits number of comments added to the page
@@ -71,9 +77,8 @@ public class DataServlet extends HttpServlet {
 
     try {
       quantity = Integer.parseInt(quant);
+      set = true;
     } catch (NumberFormatException e) {
-      // default set at 10 comments
-      quantity = 10; 
     }
 
     if (newComment != null && newComment.length() > 0){
