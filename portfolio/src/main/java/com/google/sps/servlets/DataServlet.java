@@ -32,9 +32,16 @@ import javax.servlet.http.HttpServletResponse;
 /** Servlet that returns some example content.*/
 @WebServlet("/data")
 public class DataServlet extends HttpServlet {
-  
-  private int quantity;
 
+  // Keeps track of number of desired comments to be shown 
+  private int quantity; 
+  private boolean set;
+
+  @Override
+  public void init(){
+      set = false;
+  }
+  
   @Override
   public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
     Query query = new Query("Comment").addSort("date", SortDirection.DESCENDING);
@@ -42,17 +49,18 @@ public class DataServlet extends HttpServlet {
     DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
     PreparedQuery results = datastore.prepare(query);
 
-    List<Comment> comments = new ArrayList<>();
-    if (quantity == 0){ quantity = 10; } // Default set at max of 10 comments shown upon loading screen
+    List<String> comments = new ArrayList<>();
+    if (!set) { quantity = 10; }  // Default set at max of 10 comments shown upon loading screen
     int i = 0;
     for (Entity entity : results.asIterable()) {
-      if (i < quantity){ // Limits number of comments added to the page
+      // Limits number of comments added to the page
+      if (i < quantity){ 
         long id = entity.getKey().getId();
         String message = (String) entity.getProperty("comment");
         Date timestamp = (Date) entity.getProperty("date");
         comments.add(new Comment(id, message, timestamp));
         i++;
-      }else {
+      } else {
         break; // Exits for-loop once requested number of comments appear
       }
     }
@@ -70,8 +78,8 @@ public class DataServlet extends HttpServlet {
 
     try {
       quantity = Integer.parseInt(quant);
+      set = true;
     } catch (NumberFormatException e) {
-      quantity = 10; // default set at 10 comments
     }
 
     if (newComment != null && newComment.length() > 0){
