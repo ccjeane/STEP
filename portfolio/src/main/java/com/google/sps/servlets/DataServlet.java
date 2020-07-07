@@ -20,7 +20,6 @@ import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.datastore.PreparedQuery;
 import com.google.appengine.api.datastore.Query;
 import com.google.appengine.api.datastore.Query.SortDirection;
-import com.google.sps.data.Comment;
 import java.util.*;
 import java.io.IOException;
 import com.google.gson.Gson;
@@ -29,9 +28,18 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-/** Servlet that returns some example content. TODO: modify this file to handle comments data */
+/** Servlet that returns some example content.*/
 @WebServlet("/data")
 public class DataServlet extends HttpServlet {
+
+  // Keeps track of number of desired comments to be shown 
+  private int quantity; 
+  private boolean set;
+
+  @Override
+  public void init(){
+      set = false;
+  }
   
   @Override
   public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
@@ -41,12 +49,19 @@ public class DataServlet extends HttpServlet {
     PreparedQuery results = datastore.prepare(query);
 
     List<String> comments = new ArrayList<>();
+    if (!set) { quantity = 10; }  // Default set at max of 10 comments shown upon loading screen
+    int i = 0;
     for (Entity entity : results.asIterable()) {
-      long id = entity.getKey().getId();
-      String message = (String) entity.getProperty("comment");
-      Date timestamp = (Date) entity.getProperty("date");
-
-      comments.add(message + " - " + timestamp);
+      // Limits number of comments added to the page
+      if (i < quantity){ 
+        long id = entity.getKey().getId();
+        String message = (String) entity.getProperty("comment");
+        Date timestamp = (Date) entity.getProperty("date");
+        comments.add(message + " - " + timestamp);
+        i++;
+      } else {
+        break; // Exits for-loop once requested number of comments appear
+      }
     }
 
     response.setContentType("application/json");
@@ -54,20 +69,26 @@ public class DataServlet extends HttpServlet {
     response.getWriter().println(json);
   }
 
-    @Override
+  @Override
   public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
 
-    //TODO: get input from form
-
     String newComment = request.getParameter("new-comment");
+    String quant = request.getParameter("quantity");
 
-    //comments.leaveComment(newComment);
-    Entity commentEntity = new Entity("Comment");
-    commentEntity.setProperty("comment", newComment);
-    commentEntity.setProperty("date", new Date());
+    try {
+      quantity = Integer.parseInt(quant);
+      set = true;
+    } catch (NumberFormatException e) {
+    }
 
-    DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
-    datastore.put(commentEntity);
+    if (newComment != null && newComment.length() > 0){
+        Entity commentEntity = new Entity("Comment");
+        commentEntity.setProperty("comment", newComment);
+        commentEntity.setProperty("date", new Date());
+
+        DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
+        datastore.put(commentEntity);
+    }
     // Redirect back to the same page
     response.sendRedirect("/comment.html");
   }
