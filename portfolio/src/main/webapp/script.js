@@ -67,7 +67,11 @@ function deleteComment(comment) {
 }
 
 function createMap() {
+  // Centered in West Seattle 
   const map = new google.maps.Map(
       document.getElementById('map'),
-      {center: {lat: 47.5667, lng: -122.3868}, zoom: 13, mapTypeId: 'hybrid'}); // West Seattle
+      {center: {lat: 47.5667, lng: -122.3868}, zoom: 13, mapTypeId: 'satellite'}); 
+  var wshs = new google.maps.Marker({position: {lat: 47.5766, lng: -122.3846}, label: "WSHS", map: map});
+  var alki = new google.maps.Marker({position: {lat: 47.5773, lng: -122.4078}, label: "ALKI", map: map});
+  var junction = new google.maps.Marker({position: {lat: 47.5612, lng: -122.3870}, label: "JUNCTION", map: map});
 }
