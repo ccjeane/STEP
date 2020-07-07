@@ -46,6 +46,28 @@ function loadComments() {
 /** Creates an paragraph element containing text. */
 function createListElement(text) {
   const pElement = document.createElement("p");
-  pElement.innerText = text;
+  pElement.innerText = text.comment + " - " + text.timestamp;
+
+  const deleteButtonElement = document.createElement('button');
+  deleteButtonElement.innerText = 'Delete';
+  deleteButtonElement.addEventListener('click', () => {
+    deleteComment(text);
+    // Remove the comment from the DOM.
+    pElement.remove();
+  });
+
+  pElement.appendChild(deleteButtonElement);
   return pElement;
+}
+
+function deleteComment(comment) {
+  const params = new URLSearchParams();
+  params.append('id', comment.id);
+  fetch('/delete-data', {method: 'POST', body: params});
+}
+
+function createMap() {
+  const map = new google.maps.Map(
+      document.getElementById('map'),
+      {center: {lat: 47.5667, lng: -122.3868}, zoom: 13}); // West Seattle
 }

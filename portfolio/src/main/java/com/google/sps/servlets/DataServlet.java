@@ -20,6 +20,7 @@ import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.datastore.PreparedQuery;
 import com.google.appengine.api.datastore.Query;
 import com.google.appengine.api.datastore.Query.SortDirection;
+import com.google.sps.data.Comment;
 import java.util.*;
 import java.io.IOException;
 import com.google.gson.Gson;
@@ -57,7 +58,7 @@ public class DataServlet extends HttpServlet {
         long id = entity.getKey().getId();
         String message = (String) entity.getProperty("comment");
         Date timestamp = (Date) entity.getProperty("date");
-        comments.add(message + " - " + timestamp);
+        comments.add(new Comment(id, message, timestamp));
         i++;
       } else {
         break; // Exits for-loop once requested number of comments appear
