@@ -45,6 +45,9 @@ public class DataServlet extends HttpServlet {
     PreparedQuery results = datastore.prepare(query);
 
     List<Comment> comments = new ArrayList<>();
+
+    UserService userService = UserServiceFactory.getUserService();
+    
     if (quantity == 0){ quantity = 10; } // Default set at max of 10 comments shown upon loading screen
     int i = 0;
     for (Entity entity : results.asIterable()) {
