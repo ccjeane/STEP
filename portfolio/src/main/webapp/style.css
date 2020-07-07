@@ -49,5 +49,5 @@ li a:hover:not(.active) {
 #map {
   border: thin solid black;
   height: 500px;
-  width: 500px;
+  width: 1200px;
 }
