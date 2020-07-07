@@ -31,9 +31,10 @@ import javax.servlet.http.HttpServletResponse;
 /** Servlet that returns some example content.*/
 @WebServlet("/data")
 public class DataServlet extends HttpServlet {
-  
-  private int quantity; // Keeps track of number of desired comments to be shown 
 
+  // Keeps track of number of desired comments to be shown 
+  private int quantity; 
+  
   @Override
   public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
     Query query = new Query("Comment").addSort("date", SortDirection.DESCENDING);
@@ -45,13 +46,14 @@ public class DataServlet extends HttpServlet {
     if (quantity == 0) { quantity = 10; }  // Default set at max of 10 comments shown upon loading screen
     int i = 0;
     for (Entity entity : results.asIterable()) {
-      if (i < quantity){ // Limits number of comments added to the page
+      // Limits number of comments added to the page
+      if (i < quantity){ 
         long id = entity.getKey().getId();
         String message = (String) entity.getProperty("comment");
         Date timestamp = (Date) entity.getProperty("date");
         comments.add(message + " - " + timestamp);
         i++;
-      }else {
+      } else {
         break; // Exits for-loop once requested number of comments appear
       }
     }
@@ -70,7 +72,8 @@ public class DataServlet extends HttpServlet {
     try {
       quantity = Integer.parseInt(quant);
     } catch (NumberFormatException e) {
-      quantity = 10; // default set at 10 comments
+      // default set at 10 comments
+      quantity = 10; 
     }
 
     if (newComment != null && newComment.length() > 0){
