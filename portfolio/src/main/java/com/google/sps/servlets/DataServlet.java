@@ -20,6 +20,8 @@ import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.datastore.PreparedQuery;
 import com.google.appengine.api.datastore.Query;
 import com.google.appengine.api.datastore.Query.SortDirection;
+import com.google.appengine.api.users.UserService;
+import com.google.appengine.api.users.UserServiceFactory;
 import com.google.sps.data.Comment;
 import java.util.*;
 import java.io.IOException;
@@ -78,6 +80,8 @@ public class DataServlet extends HttpServlet {
         Entity commentEntity = new Entity("Comment");
         commentEntity.setProperty("comment", newComment);
         commentEntity.setProperty("date", new Date());
+        String email = userService.getCurrentUser().getEmail();
+        messageEntity.setProperty("email", email);
 
         DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
         datastore.put(commentEntity);
