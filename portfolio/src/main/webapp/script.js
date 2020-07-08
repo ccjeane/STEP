@@ -37,26 +37,31 @@ function loadComments() {
   fetch('/data').then(response => response.json()).then((comments) => {
     // Build the list of comments
     const historyEl = document.getElementById('history');
+    var user = comments.shift();
     comments.forEach((line) => {
-      historyEl.appendChild(createListElement(line));
+      //if (line.timestamp != null){
+        historyEl.appendChild(createListElement(line, user.user));
+      //}
     });
   });
 }
 
 /** Creates an paragraph element containing text. */
-function createListElement(text) {
+function createListElement(text, user) {
   const pElement = document.createElement("p");
   pElement.innerText = text.comment + " - " + text.timestamp;
 
   const deleteButtonElement = document.createElement('button');
-  deleteButtonElement.innerText = 'Delete';
-  deleteButtonElement.addEventListener('click', () => {
-    deleteComment(text);
-    // Remove the comment from the DOM.
-    pElement.remove();
-  });
+  if (text.user == user){
+    deleteButtonElement.innerText = 'Delete';
+    deleteButtonElement.addEventListener('click', () => {
+        deleteComment(text);
+        // Remove the comment from the DOM.
+        pElement.remove();
+    });
 
-  pElement.appendChild(deleteButtonElement);
+    pElement.appendChild(deleteButtonElement);
+  }
   return pElement;
 }
 

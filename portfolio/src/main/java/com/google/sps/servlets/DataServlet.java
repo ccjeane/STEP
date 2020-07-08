@@ -54,6 +54,10 @@ public class DataServlet extends HttpServlet {
     PreparedQuery results = datastore.prepare(query);
     if (userService.isUserLoggedIn()) {
         List<Comment> comments = new ArrayList<>();
+
+        // Add the current user to the JSON to send over to the JS file
+        comments.add(new Comment(0, null, null, userService.getCurrentUser().getEmail()));
+
         if (!set) { quantity = 10; }  // Default set at max of 10 comments shown upon loading screen
         int i = 0;
         for (Entity entity : results.asIterable()) {
