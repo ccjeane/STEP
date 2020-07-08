@@ -48,23 +48,25 @@ public class DataServlet extends HttpServlet {
 
     UserService userService = UserServiceFactory.getUserService();
     
-    if (quantity == 0){ quantity = 10; } // Default set at max of 10 comments shown upon loading screen
-    int i = 0;
-    for (Entity entity : results.asIterable()) {
-      if (i < quantity){ // Limits number of comments added to the page
-        long id = entity.getKey().getId();
-        String message = (String) entity.getProperty("comment");
-        Date timestamp = (Date) entity.getProperty("date");
-        comments.add(new Comment(id, message, timestamp));
-        i++;
-      }else {
-        break; // Exits for-loop once requested number of comments appear
-      }
-    }
+    if (userService.isUserLoggedIn()) {
+        if (quantity == 0){ quantity = 10; } // Default set at max of 10 comments shown upon loading screen
+        int i = 0;
+        for (Entity entity : results.asIterable()) {
+        if (i < quantity){ // Limits number of comments added to the page
+            long id = entity.getKey().getId();
+            String message = (String) entity.getProperty("comment");
+            Date timestamp = (Date) entity.getProperty("date");
+            comments.add(new Comment(id, message, timestamp));
+            i++;
+        }else {
+            break; // Exits for-loop once requested number of comments appear
+        }
+        }
 
-    response.setContentType("application/json");
-    String json = new Gson().toJson(comments);
-    response.getWriter().println(json);
+        response.setContentType("application/json");
+        String json = new Gson().toJson(comments);
+        response.getWriter().println(json);
+    }
   }
 
   @Override
