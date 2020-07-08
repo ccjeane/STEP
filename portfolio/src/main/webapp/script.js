@@ -67,7 +67,47 @@ function deleteComment(comment) {
 }
 
 function createMap() {
+  // Centered in West Seattle 
   const map = new google.maps.Map(
       document.getElementById('map'),
-      {center: {lat: 47.5667, lng: -122.3868}, zoom: 13}); // West Seattle
+      {center: {lat: 47.5667, lng: -122.3868}, zoom: 13, mapTypeId: 'satellite'}); 
+  var wshs = new google.maps.Marker({position: {lat: 47.5766, lng: -122.3846}, map: map});
+  var alki = new google.maps.Marker({position: {lat: 47.5773, lng: -122.4078}, map: map});
+  var junction = new google.maps.Marker({position: {lat: 47.5612, lng: -122.3870}, map: map});
+
+  var wshsString = '<div id="content">'+
+      '<p style="color:black">This is West Seattle High School. Claudia graduated from here in 2018'+
+      'with an unweighted GPA of 3.92.</p>'+
+      '<p style="color:black">She was on the Varsity Cheerleading squad, the Varsity Golf Team,'+ 
+      'and was student body Vice President.</p>'+
+      '</div>';
+
+  var alkiString = '<div id="content">'+
+      '<p style="color:black">This is Alki Elementary School. Claudia grew up on Alki beach'+ 
+      ' and has always loved being near the water.</p>'+
+      '</div>';
+
+  var junctionString = '<div id="content">'+
+      '<p style="color:black">This is the Alaska Junction. It is the central point of West Seattle, '+ 
+      'home to many local shops & restaurants.</p>'+
+      '<p style="color:black">Claudia had her first job at Shelbys Diner here in 2016.</p>'+
+      '</div>';
+
+  var infoWindow = new google.maps.InfoWindow({});
+
+  wshs.addListener("click", function() {
+    infoWindow.setContent(wshsString);
+    infoWindow.open(map, wshs);
+  });
+
+  alki.addListener("click", function(){
+    infoWindow.setContent(alkiString);
+    infoWindow.open(map, alki);
+  });
+
+  junction.addListener("click", function(){
+    infoWindow.setContent(junctionString);
+    infoWindow.open(map, junction);
+  });
+
 }
