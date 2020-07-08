@@ -20,6 +20,8 @@ import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.datastore.PreparedQuery;
 import com.google.appengine.api.datastore.Query;
 import com.google.appengine.api.datastore.Query.SortDirection;
+import com.google.appengine.api.users.UserService;
+import com.google.appengine.api.users.UserServiceFactory;
 import com.google.sps.data.Comment;
 import java.util.*;
 import java.io.IOException;
@@ -46,6 +48,7 @@ public class DataServlet extends HttpServlet {
   public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
     Query query = new Query("Comment").addSort("date", SortDirection.DESCENDING);
 
+    UserService userService = UserServiceFactory.getUserService();
     DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
     PreparedQuery results = datastore.prepare(query);
 
@@ -77,10 +80,9 @@ public class DataServlet extends HttpServlet {
     String quant = request.getParameter("quantity");
 
     try {
-      quantity = Integer.parseInt(quant);
-      set = true;
-    } catch (NumberFormatException e) {
-    }
+        quantity = Integer.parseInt(quant);
+        set = true;
+    } catch (NumberFormatException e) {}
 
     if (newComment != null && newComment.length() > 0){
         Entity commentEntity = new Entity("Comment");
