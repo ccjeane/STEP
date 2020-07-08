@@ -93,21 +93,21 @@ function createMap() {
       '<p style="color:black">Claudia had her first job at Shelbys Diner here in 2016.</p>'+
       '</div>';
 
-  var infowindow = new google.maps.InfoWindow({});
+  var infoWindow = new google.maps.InfoWindow({});
 
   wshs.addListener("click", function() {
-    infowindow.setContent(wshsString);
-    infowindow.open(map, wshs);
+    infoWindow.setContent(wshsString);
+    infoWindow.open(map, wshs);
   });
 
   alki.addListener("click", function(){
-    infowindow.setContent(alkiString);
-    infowindow.open(map, alki);
+    infoWindow.setContent(alkiString);
+    infoWindow.open(map, alki);
   });
 
   junction.addListener("click", function(){
-    infowindow.setContent(junctionString);
-    infowindow.open(map, junction);
+    infoWindow.setContent(junctionString);
+    infoWindow.open(map, junction);
   });
 
 }
