@@ -21,6 +21,7 @@ import com.google.appengine.api.datastore.PreparedQuery;
 import com.google.appengine.api.datastore.Query;
 import com.google.appengine.api.datastore.Query.SortDirection;
 import com.google.appengine.api.users.UserService;
+import com.google.appengine.api.users.User;
 import com.google.appengine.api.users.UserServiceFactory;
 import com.google.sps.data.Comment;
 import java.util.*;
@@ -61,13 +62,14 @@ public class DataServlet extends HttpServlet {
                 long id = entity.getKey().getId();
                 String message = (String) entity.getProperty("comment");
                 Date timestamp = (Date) entity.getProperty("date");
-                comments.add(new Comment(id, message, timestamp));
+                String user = (String) entity.getProperty("email");
+                comments.add(new Comment(id, message, timestamp, user));
                 i++;
             } else {
                 break; // Exits for-loop once requested number of comments appear
             }
         }
-
+        
         response.setContentType("application/json");
         String json = new Gson().toJson(comments);
         response.getWriter().println(json);
@@ -85,7 +87,7 @@ public class DataServlet extends HttpServlet {
 
     // Only logged-in users can post
     if (!userService.isUserLoggedIn()) {
-      response.sendRedirect("/comment.html");
+      response.sendRedirect("/data");
       return;
     }
 
@@ -101,7 +103,8 @@ public class DataServlet extends HttpServlet {
         Entity commentEntity = new Entity("Comment");
         commentEntity.setProperty("comment", newComment);
         commentEntity.setProperty("date", new Date());
-        commentEntity.setProperty("user", userService.getCurrentUser());
+        String userEmail = userService.getCurrentUser().getEmail();
+        commentEntity.setProperty("email", userEmail);
 
         DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
         datastore.put(commentEntity);
