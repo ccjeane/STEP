@@ -39,9 +39,7 @@ function loadComments() {
     const historyEl = document.getElementById('history');
     var user = comments.shift();
     comments.forEach((line) => {
-      //if (line.timestamp != null){
         historyEl.appendChild(createListElement(line, user.user));
-      //}
     });
   });
 }
