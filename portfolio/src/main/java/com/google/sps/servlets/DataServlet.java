@@ -51,30 +51,43 @@ public class DataServlet extends HttpServlet {
     UserService userService = UserServiceFactory.getUserService();
     DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
     PreparedQuery results = datastore.prepare(query);
+    if (userService.isUserLoggedIn()) {
+        List<Comment> comments = new ArrayList<>();
+        if (!set) { quantity = 10; }  // Default set at max of 10 comments shown upon loading screen
+        int i = 0;
+        for (Entity entity : results.asIterable()) {
+        // Limits number of comments added to the page
+            if (i < quantity){ 
+                long id = entity.getKey().getId();
+                String message = (String) entity.getProperty("comment");
+                Date timestamp = (Date) entity.getProperty("date");
+                comments.add(new Comment(id, message, timestamp));
+                i++;
+            } else {
+                break; // Exits for-loop once requested number of comments appear
+            }
+        }
 
-    List<String> comments = new ArrayList<>();
-    if (!set) { quantity = 10; }  // Default set at max of 10 comments shown upon loading screen
-    int i = 0;
-    for (Entity entity : results.asIterable()) {
-      // Limits number of comments added to the page
-      if (i < quantity){ 
-        long id = entity.getKey().getId();
-        String message = (String) entity.getProperty("comment");
-        Date timestamp = (Date) entity.getProperty("date");
-        comments.add(new Comment(id, message, timestamp));
-        i++;
-      } else {
-        break; // Exits for-loop once requested number of comments appear
-      }
+        response.setContentType("application/json");
+        String json = new Gson().toJson(comments);
+        response.getWriter().println(json);
+    } else {
+        String urlToRedirectToAfterUserLogsIn = "/comment.html";
+        String loginUrl = userService.createLoginURL(urlToRedirectToAfterUserLogsIn);
+        response.getWriter().println("<p>Login <a href=\"" + loginUrl + "\">here</a>.</p>");
     }
-
-    response.setContentType("application/json");
-    String json = new Gson().toJson(comments);
-    response.getWriter().println(json);
   }
 
   @Override
   public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
+
+    UserService userService = UserServiceFactory.getUserService();
+
+    // Only logged-in users can post
+    if (!userService.isUserLoggedIn()) {
+      response.sendRedirect("/comment.html");
+      return;
+    }
 
     String newComment = request.getParameter("new-comment");
     String quant = request.getParameter("quantity");
@@ -88,6 +101,7 @@ public class DataServlet extends HttpServlet {
         Entity commentEntity = new Entity("Comment");
         commentEntity.setProperty("comment", newComment);
         commentEntity.setProperty("date", new Date());
+        commentEntity.setProperty("user", userService.getCurrentUser());
 
         DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
         datastore.put(commentEntity);
