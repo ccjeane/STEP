@@ -37,7 +37,7 @@ import javax.servlet.http.HttpServletResponse;
 public class DataServlet extends HttpServlet {
 
   // Keeps track of number of desired comments to be shown 
-  private int quantity; 
+  private int maxComments; 
   private boolean set;
 
   @Override
@@ -58,17 +58,17 @@ public class DataServlet extends HttpServlet {
         // Add the current user to the JSON to send over to the JS file
         comments.add(new Comment(0, null, null, userService.getCurrentUser().getEmail()));
 
-        if (!set) { quantity = 10; }  // Default set at max of 10 comments shown upon loading screen
-        int i = 0;
+        if (!set) { maxComments = 10; }  // Default set at max of 10 comments shown upon loading screen
+        
+
         for (Entity entity : results.asIterable()) {
         // Limits number of comments added to the page
-            if (i < quantity){ 
+            if (comments.size() <= maxComments){ 
                 long id = entity.getKey().getId();
                 String message = (String) entity.getProperty("comment");
                 Date timestamp = (Date) entity.getProperty("date");
                 String user = (String) entity.getProperty("email");
                 comments.add(new Comment(id, message, timestamp, user));
-                i++;
             } else {
                 break; // Exits for-loop once requested number of comments appear
             }
@@ -96,10 +96,10 @@ public class DataServlet extends HttpServlet {
     }
 
     String newComment = request.getParameter("new-comment");
-    String quant = request.getParameter("quantity");
+    String numOfComments = request.getParameter("max-comments");
 
     try {
-        quantity = Integer.parseInt(quant);
+        maxComments = Integer.parseInt(numOfComments);
         set = true;
     } catch (NumberFormatException e) {}
 
