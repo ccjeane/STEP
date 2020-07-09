@@ -16,16 +16,4 @@ public final class Comment{
     this.timestamp = timestamp;
     this.user = user;
   }
-
-  public String getMessage(){
-      return comment;
-  }
-
-  public String getDate(){
-      return timestamp.toString();
-  }
-  
-  public String getUser(){
-      return user;
-  }
 }
