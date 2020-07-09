@@ -52,7 +52,7 @@ function createListElement(text, user) {
   // Adds a button to make their comments deletable from public eye
   const deleteButtonElement = document.createElement('button');
   if (text.user == user){
-    deleteButtonElement.innerText = 'Delete';
+    deleteButtonElement.innerText = 'Archive';
     deleteButtonElement.addEventListener('click', () => {
         deleteComment(text);
         // Remove the comment from the DOM.
