@@ -104,7 +104,9 @@ public class DataServlet extends HttpServlet {
     } catch (NumberFormatException e) {}
 
     if (newComment != null && newComment.length() > 0){
+        // Entity containing publically viewed comments
         Entity commentEntity = new Entity("Comment");
+        // Entity containing any comment ever left on the site
         Entity backlog = new Entity("Backlog");
 
         commentEntity.setProperty("comment", newComment);
