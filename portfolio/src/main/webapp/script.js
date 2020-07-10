@@ -30,10 +30,36 @@ function addRandomFact() {
   factContainer.innerText = fact;
 }
 
+function submitButton(){
+  fetch('/data').then(response => response.json()).then((comments) => {
+    const button = document.getElementById('submit');
+    var user = comments.shift();
+    if (user.user != null){
+      const formElement = document.createElement('form');
+      formElement.setAttribute('method',"POST");
+      formElement.setAttribute('action',"/data");
+      formElement.setAttribute('id', "form");
+      button.appendChild(formElement);
+      var inputEl = document.createElement("input"); //input element, text
+      inputEl.setAttribute('type',"text");
+      inputEl.setAttribute('name',"new-comment");
+      button.appendChild(inputEl);
+
+      const buttonElement = document.createElement('button');
+      buttonElement.innerText = 'Submit';
+      buttonElement.addEventListener('click', () => {
+        document.getElementById("form").submit();
+      });
+      button.appendChild(buttonElement);
+    }
+  });
+}
+
 /**
  * Fetches the current state of the game and builds the UI.
  */
 function loadComments() {
+  submitButton();
   fetch('/data').then(response => response.json()).then((comments) => {
     // Build the list of comments
     const historyEl = document.getElementById('history');

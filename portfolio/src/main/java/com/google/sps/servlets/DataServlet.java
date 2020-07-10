@@ -52,36 +52,36 @@ public class DataServlet extends HttpServlet {
     UserService userService = UserServiceFactory.getUserService();
     DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
     PreparedQuery results = datastore.prepare(query);
-    if (userService.isUserLoggedIn()) {
-        List<Comment> comments = new ArrayList<>();
+    List<Comment> comments = new ArrayList<>();
 
-        // Add the current user to the JSON to send over to the JS file
-        comments.add(new Comment(0, null, null, userService.getCurrentUser().getEmail()));
-
-        if (!set) { maxComments = 10; }  // Default set at max of 10 comments shown upon loading screen
-        
-
-        for (Entity entity : results.asIterable()) {
-        // Limits number of comments added to the page
-            if (comments.size() <= maxComments){ 
-                long id = entity.getKey().getId();
-                String message = (String) entity.getProperty("comment");
-                Date timestamp = (Date) entity.getProperty("date");
-                String user = (String) entity.getProperty("email");
-                comments.add(new Comment(id, message, timestamp, user));
-            } else {
-                break; // Exits for-loop once requested number of comments appear
-            }
-        }
-        
-        response.setContentType("application/json");
-        String json = new Gson().toJson(comments);
-        response.getWriter().println(json);
+    // Add the current user to the JSON to send over to the JS file
+    String currUser = "";
+    if (userService.getCurrentUser() == null){
+        currUser = null;
     } else {
-        String urlToRedirectToAfterUserLogsIn = "/comment.html";
-        String loginUrl = userService.createLoginURL(urlToRedirectToAfterUserLogsIn);
-        response.getWriter().println("<p>Login <a href=\"" + loginUrl + "\">here</a>.</p>");
+        currUser = userService.getCurrentUser().getEmail();
     }
+    comments.add(new Comment(0, null, null, currUser));
+
+    if (!set) { maxComments = 10; }  // Default set at max of 10 comments shown upon loading screen
+    
+
+    for (Entity entity : results.asIterable()) {
+    // Limits number of comments added to the page
+        if (comments.size() <= maxComments){ 
+            long id = entity.getKey().getId();
+            String message = (String) entity.getProperty("comment");
+            Date timestamp = (Date) entity.getProperty("date");
+            String user = (String) entity.getProperty("email");
+            comments.add(new Comment(id, message, timestamp, user));
+        } else {
+            break; // Exits for-loop once requested number of comments appear
+        }
+    }
+    
+    response.setContentType("application/json");
+    String json = new Gson().toJson(comments);
+    response.getWriter().println(json);
   }
 
   @Override
@@ -91,41 +91,43 @@ public class DataServlet extends HttpServlet {
 
     // Only logged-in users can post
     if (!userService.isUserLoggedIn()) {
-      response.sendRedirect("/data");
-      return;
+        String urlToRedirectToAfterUserLogsIn = "/comment.html";
+        String loginUrl = userService.createLoginURL(urlToRedirectToAfterUserLogsIn);
+        response.getWriter().println("<p>Login <a href=\"" + loginUrl + "\">here</a>.</p>");
+    } else {
+
+        String newComment = request.getParameter("new-comment");
+        String numOfComments = request.getParameter("max-comments");
+
+        try {
+            maxComments = Integer.parseInt(numOfComments);
+            set = true;
+        } catch (NumberFormatException e) {}
+
+        if (newComment != null && newComment.length() > 0){
+            // Entity containing publically viewed comments
+            Entity commentEntity = new Entity("Comment");
+            // Entity containing any comment ever left on the site
+            Entity backlog = new Entity("Backlog");
+
+            commentEntity.setProperty("comment", newComment);
+            backlog.setProperty("message", newComment);
+
+            Date date = new Date();
+            commentEntity.setProperty("date", date);
+            backlog.setProperty("date", date);
+
+            String userEmail = userService.getCurrentUser().getEmail();
+            commentEntity.setProperty("email", userEmail);
+            backlog.setProperty("email", userEmail);
+
+            DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
+            datastore.put(commentEntity);
+            datastore.put(backlog);
+        }
+        // Redirect back to the same page
+        response.sendRedirect("/comment.html");
     }
-
-    String newComment = request.getParameter("new-comment");
-    String numOfComments = request.getParameter("max-comments");
-
-    try {
-        maxComments = Integer.parseInt(numOfComments);
-        set = true;
-    } catch (NumberFormatException e) {}
-
-    if (newComment != null && newComment.length() > 0){
-        // Entity containing publically viewed comments
-        Entity commentEntity = new Entity("Comment");
-        // Entity containing any comment ever left on the site
-        Entity backlog = new Entity("Backlog");
-
-        commentEntity.setProperty("comment", newComment);
-        backlog.setProperty("message", newComment);
-
-        Date date = new Date();
-        commentEntity.setProperty("date", date);
-        backlog.setProperty("date", date);
-
-        String userEmail = userService.getCurrentUser().getEmail();
-        commentEntity.setProperty("email", userEmail);
-        backlog.setProperty("email", userEmail);
-
-        DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
-        datastore.put(commentEntity);
-        datastore.put(backlog);
-    }
-    // Redirect back to the same page
-    response.sendRedirect("/comment.html");
   }
 
   /**
