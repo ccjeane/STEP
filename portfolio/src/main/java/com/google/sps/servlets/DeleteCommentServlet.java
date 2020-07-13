@@ -9,6 +9,9 @@ import com.google.appengine.api.datastore.Query;
 import com.google.appengine.api.datastore.Query.SortDirection;
 import com.google.appengine.api.datastore.Key;
 import com.google.appengine.api.datastore.KeyFactory;
+import com.google.appengine.api.users.User;
+import com.google.appengine.api.users.UserServiceFactory;
+import com.google.appengine.api.users.UserService;
 import java.io.IOException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -27,14 +30,23 @@ public class DeleteCommentServlet extends HttpServlet {
 
     DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
     PreparedQuery results = datastore.prepare(query);
+    
+    boolean deletable = false;    
+    UserService userService = UserServiceFactory.getUserService();
 
     Key commentEntityKey = null;
     for (Entity entity : results.asIterable()) { // Find key that matches ID that needs to be deleted
       if (id == entity.getKey().getId()){ 
         commentEntityKey = entity.getKey();
+        if (entity.getProperty("email").equals(userService.getCurrentUser().getEmail())){
+            deletable = true;
+        }  
+        break;
       }
     }
 
-    datastore.delete(commentEntityKey);
+    if (deletable){
+        datastore.delete(commentEntityKey);
+    }
   }
 }
