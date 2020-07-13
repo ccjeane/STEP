@@ -24,22 +24,42 @@ public final class FindMeetingQuery {
     Collection<TimeRange> times = new ArrayList<>();
     Set<String> desiredGuests = new HashSet<>();
     desiredGuests.addAll(request.getAttendees());
-    
-    for (Event e: events){
-        Set<String> busy = e.getAttendees();
-        
-        // Get the intersection between meeting request 
-        Set<String> result = busy.stream()
-            .distinct()
-            .filter(desiredGuests::contains)
-            .collect(Collectors.toSet());
+    int duration = (int) request.getDuration();
+    int time = 0;
+    int latestTime = TimeRange.getTimeInMinutes(23,59) - duration;
+    while (time <= latestTime){
+        for (Event e: events){
+            if (e.getWhen().contains(time)){
+                Set<String> busy = e.getAttendees();
+                
+                // Get the intersection between meeting request 
+                Set<String> result = busy.stream()
+                    .distinct()
+                    .filter(desiredGuests::contains)
+                    .collect(Collectors.toSet());
 
-        // If there is an intersection 
-        if (result.size() > 0){
+                // If there is NOT an intersection, 
+                if (result.size() == 0){
+                    times.add(TimeRange.fromStartDuration(time, duration));
+                }
+            }
+        }
+        time++;
+    }
 
+    Collection<TimeRange> simplified = new ArrayList<>();
+    if (times.size() > 0){
+        int start = times.get(0).start();
+        int end = times.get(0).end();
+        for (int i = 1; i < times.size(); i++){
+            if (times.get(i).start < end && times.get(i).end() < end){
+                end = times.get(i).end();
+            } else {
+                simplified.add(TimeRange.fromStartEnd(start, end, true));
+            }
         }
     }
 
-    return times;
+    return simplified;
   }
 }
