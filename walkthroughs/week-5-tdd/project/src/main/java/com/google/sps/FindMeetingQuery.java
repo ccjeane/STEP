@@ -15,9 +15,31 @@
 package com.google.sps;
 
 import java.util.Collection;
+import java.util.*;
+import java.util.stream.Stream; 
+import java.util.stream.Collectors;
 
 public final class FindMeetingQuery {
   public Collection<TimeRange> query(Collection<Event> events, MeetingRequest request) {
-    throw new UnsupportedOperationException("TODO: Implement this method.");
+    Collection<TimeRange> times = new ArrayList<>();
+    Set<String> desiredGuests = new HashSet<>();
+    desiredGuests.addAll(request.getAttendees());
+    
+    for (Event e: events){
+        Set<String> busy = e.getAttendees();
+        
+        // Get the intersection between meeting request 
+        Set<String> result = busy.stream()
+            .distinct()
+            .filter(desiredGuests::contains)
+            .collect(Collectors.toSet());
+
+        // If there is an intersection 
+        if (result.size() > 0){
+
+        }
+    }
+
+    return times;
   }
 }
