@@ -25,10 +25,94 @@ public final class FindMeetingQuery {
     desiredGuests.addAll(request.getAttendees());
     int duration = (int) request.getDuration();
     int latestTime = TimeRange.WHOLE_DAY.end();
+
+    if (duration > latestTime){
+        return new ArrayList<>();
+    }
+    if (desiredGuests.size() == 0){
+        ArrayList<TimeRange> freeDay = new ArrayList<>();
+        freeDay.add(TimeRange.WHOLE_DAY);
+        return freeDay;
+    }
     int start = 0;
 
+    // Find all the times when our desired attendees are busy
+    ArrayList<ArrayList<TimeRange>> busyTimes = new ArrayList<>();
+    for (String guest : desiredGuests){
+        ArrayList<TimeRange> guestBusy = new ArrayList<>();
+        for (Event e : events){
+            // See if they are attending the event
+            if (e.getAttendees().contains(guest)){
+                // Get the time of the event so we can mark as busy
+                guestBusy.add(e.getWhen());
+            }
+        }
+        busyTimes.add(guestBusy);
+    }
+    
+    // Use our busy times list to find all times when our guests are NOT busy
+    ArrayList<ArrayList<TimeRange>> allTimes = new ArrayList<>();
+    for (List<TimeRange> guestSchedule : busyTimes){
+        ArrayList<TimeRange> available = new ArrayList<>();
+        // If their schedule is empty, they are free the entire day. 
+        if (guestSchedule.size() == 0){
+            available.add(TimeRange.WHOLE_DAY);
+        } else {
+            Collections.sort(guestSchedule, TimeRange.ORDER_BY_START);
+            int st = 0;
+            TimeRange t = null;
+            // Find available time ranges between each event in their schedule
+            for (int i = 0; i < guestSchedule.size(); i++){
+                t = guestSchedule.get(i);
+                if (st < t.start() && t.start() - st >= duration){
+                    available.add(TimeRange.fromStartEnd(st, t.start(), false));
+                } else {
+                    st = t.end();
+                }
+            }
+            // Checks the end of the day for availability
+            if (t != null && t.end() < latestTime && latestTime - t.end() >= duration){
+                available.add(TimeRange.fromStartEnd(t.end(), latestTime, false));
+            }
+        }
+        allTimes.add(available);
+    }
+    //return allTimes.get(0);
+
+
+    Collection<TimeRange> intersect = new ArrayList<>();
+    if (allTimes.size() == 1){
+        return allTimes.get(0);
+    }
+
+    for (int i = 0; i < allTimes.size() - 1; i++){
+        if (allTimes.get(i).size() > 0 ){//&& allTimes.get(i+1).size() > 0){
+            // Finds intersection between two TimeRanges. 
+            for (TimeRange t : allTimes.get(i)){
+                for (TimeRange c : allTimes.get(i + 1)){
+                    if (t.overlaps(c)){
+                        int overlapStart = Math.max(c.start(), t.start());
+                        int overlapEnd = Math.min(c.end(), t.end());
+                        if (overlapEnd - overlapStart >= duration){
+                            intersect.add(TimeRange.fromStartEnd(overlapStart, overlapEnd, false));
+                        }
+                    }
+                }
+            }
+        } else {
+            // If any of the guests is busy for the entire day, just return an empty list
+            return new ArrayList<>();
+        }
+    } 
+
+    return intersect;
+  }
+}
+
+/*
     ArrayList<ArrayList<TimeRange>> allTimes = new ArrayList<>();
     for (String guest : desiredGuests){
+        start = 0;
         ArrayList<TimeRange> guestNotBusy = new ArrayList<>();
         for (Event e : events){
             // See if they are attending the event
@@ -43,87 +127,10 @@ public final class FindMeetingQuery {
                 start = busy.end();
             }
         }
-        if (latestTime - start > duration){
+        if (latestTime - start >= duration){
             guestNotBusy.add(TimeRange.fromStartEnd(start, latestTime, false));
         }
 
         allTimes.add(guestNotBusy);
     }
-
-    Collection<TimeRange> intersect = new ArrayList<>();
-    if (allTimes.size() >= 1){
-        for (TimeRange first : allTimes.get(0)){
-            intersect.add(first);
-        }
-    }
-
-    for (int i = 1; i < allTimes.size(); i++){
-        if (allTimes.get(i).size() > 0){
-            // Find the intersection between two TimeRanges. If there is no intersection, remove the old TR as it isn't applicable.
-            for (TimeRange t : intersect){
-                for (TimeRange c : allTimes.get(i)){
-                }
-            }
-        } else {
-            // If any individual guest is busy for the entire day, just return an empty list
-            return new ArrayList<>();
-        }
-    }
-
-    return intersect;
-
-
-    /*
-    while (time <= latestTime){
-        for (Event e: events){
-            if (e.getWhen().contains(time)){
-                Set<String> busy = e.getAttendees();
-                
-                // Get the intersection between meeting request 
-                Set<String> result = busy.stream()
-                    .distinct()
-                    .filter(desiredGuests::contains)
-                    .collect(Collectors.toSet());
-
-                // If there is an intersection, end the current time range.
-                if (result.size() >= 1 && (time - start) >= duration){
-                    times.add(TimeRange.fromStartDuration(start, time));
-                    start = e.getWhen().end(); // Start time over after this event finishes
-                    time = e.getWhen().end();
-                } else {
-                    time ++;
-                }
-            } else {
-                time ++;
-            }
-        }
-        time++;
-    }
     */
-
-    /*
-    Collection<TimeRange> simplified = new ArrayList<>();
-    Iterator<TimeRange> it = times.iterator();
-    if (times.size() > 0){
-        TimeRange tr = it.next();
-        int start = tr.start();
-        int end = tr.end();
-        while(it.hasNext()){
-            tr = it.next();
-            if (start == -1){
-                start = tr.start();
-            }
-            if (tr.start() < end && tr.end() < end){
-                end = tr.end();
-            } else {
-                simplified.add(TimeRange.fromStartEnd(start, end, true));
-                start = -1;
-            }
-        }
-    }
-    */
-
-
-    //return times;
-  }
-}
