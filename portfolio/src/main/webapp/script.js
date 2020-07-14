@@ -39,9 +39,7 @@ function loadComments() {
     const historyEl = document.getElementById('history');
     var user = comments.shift();
     comments.forEach((line) => {
-      //if (line.timestamp != null){
         historyEl.appendChild(createListElement(line, user.user));
-      //}
     });
   });
 }
@@ -51,9 +49,10 @@ function createListElement(text, user) {
   const pElement = document.createElement("p");
   pElement.innerText = text.comment + " - " + text.timestamp;
 
+  // Adds a button to make their comments deletable from public eye
   const deleteButtonElement = document.createElement('button');
   if (text.user == user){
-    deleteButtonElement.innerText = 'Delete';
+    deleteButtonElement.innerText = 'Archive';
     deleteButtonElement.addEventListener('click', () => {
         deleteComment(text);
         // Remove the comment from the DOM.
@@ -65,6 +64,8 @@ function createListElement(text, user) {
   return pElement;
 }
 
+
+// Delete the comment from the Comments Server 
 function deleteComment(comment) {
   const params = new URLSearchParams();
   params.append('id', comment.id);
