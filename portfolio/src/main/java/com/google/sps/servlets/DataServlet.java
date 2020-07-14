@@ -104,14 +104,25 @@ public class DataServlet extends HttpServlet {
     } catch (NumberFormatException e) {}
 
     if (newComment != null && newComment.length() > 0){
+        // Entity containing publically viewed comments
         Entity commentEntity = new Entity("Comment");
+        // Entity containing any comment ever left on the site
+        Entity backlog = new Entity("Backlog");
+
         commentEntity.setProperty("comment", newComment);
-        commentEntity.setProperty("date", new Date());
+        backlog.setProperty("message", newComment);
+
+        Date date = new Date();
+        commentEntity.setProperty("date", date);
+        backlog.setProperty("date", date);
+
         String userEmail = userService.getCurrentUser().getEmail();
         commentEntity.setProperty("email", userEmail);
+        backlog.setProperty("email", userEmail);
 
         DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
         datastore.put(commentEntity);
+        datastore.put(backlog);
     }
     // Redirect back to the same page
     response.sendRedirect("/comment.html");
