@@ -19,12 +19,20 @@ import java.util.*;
 import java.util.stream.Stream; 
 import java.util.stream.Collectors;
 
+/*
+  Finds times for a meeting to take place
+*/
 public final class FindMeetingQuery {
 
   // The end of the day, i.e. 1440 minutes. 
   private final int LATEST_TIME = TimeRange.WHOLE_DAY.end();
 
-  // Given a collection of Events and a MeetingRequest, finds all times where event could take place.
+  /* 
+    This finds all times where event could take place.
+    @param events Takes a collection of events
+    @param request Takes a MeetingRequest
+    @return Collection<TimeRange> This returns the times where the meeting can take place.
+  */
   public Collection<TimeRange> query(Collection<Event> events, MeetingRequest request) {
     Set<String> desiredGuests = new HashSet<>();
     desiredGuests.addAll(request.getAttendees());
@@ -62,8 +70,13 @@ public final class FindMeetingQuery {
     return findIntersectionBetweenLists(allTimes, duration);
   }
 
-  // Given a guest's schedule and a meeting duration, finds all open times during schedule
-  // where a meeting could take place.
+  /* 
+   Given a guest's schedule, finds all open times during schedule
+   where a meeting could take place.
+   @param guestSchedule Takes a list of when guests are busy
+   @param duration The length of the desired meeting
+   @return ArrayList<TimeRange> Returns a list containing the TimeRanges where the meeting could occur
+  */
   public ArrayList<TimeRange> findAvailability(ArrayList<TimeRange> guestSchedule, int duration){
     ArrayList<TimeRange> available = new ArrayList<>();
     // If their schedule is empty, they are free the entire day
@@ -102,7 +115,11 @@ public final class FindMeetingQuery {
   }
 
 
-  // Finds the shared open times between multiple lists
+  /* Finds the shared open times between multiple lists
+    @param allTimes Takes a list of each guest's schedule
+    @param duration The duration of the meeting
+    @return Returns the times where all guests are available. 
+  */
   public List<TimeRange> findIntersectionBetweenLists(ArrayList<ArrayList<TimeRange>> allTimes, int duration){
     List<TimeRange> intersection = new ArrayList<>();
 
@@ -131,8 +148,12 @@ public final class FindMeetingQuery {
   }
 
 
-  // Finds the shared time between two TimeRanges
-  // If there is no intersection, returns null
+  /* 
+   Finds the shared time between two TimeRanges
+   @param a The first TimeRange
+   @param b The second TimeRange
+   @return TimeRange Returns where the two TimeRanges overlap, or null if they do not.
+  */
   public TimeRange findIntersectionBetweenRanges(TimeRange a, TimeRange b, int duration){
     int start = Math.max(a.start(), b.start()); 
     int end = Math.min(a.end(), b.end());
