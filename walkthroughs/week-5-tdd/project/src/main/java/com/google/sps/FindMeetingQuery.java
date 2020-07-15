@@ -31,33 +31,33 @@ public final class FindMeetingQuery {
     int duration = (int) request.getDuration();
 
     if (duration > LATEST_TIME){
-        return new ArrayList<>();
+      return new ArrayList<>();
     }
     if (desiredGuests.size() == 0){
-        ArrayList<TimeRange> freeDay = new ArrayList<>();
-        freeDay.add(TimeRange.WHOLE_DAY);
-        return freeDay;
+      ArrayList<TimeRange> freeDay = new ArrayList<>();
+      freeDay.add(TimeRange.WHOLE_DAY);
+      return freeDay;
     }
     int start = 0;
 
     // Find all the times when our desired attendees are busy
     ArrayList<ArrayList<TimeRange>> busyTimes = new ArrayList<>();
     for (String guest : desiredGuests){
-        ArrayList<TimeRange> guestBusy = new ArrayList<>();
-        for (Event e : events){
-            // See if they are attending the event
-            if (e.getAttendees().contains(guest)){
-                // Get the time of the event so we can mark as busy
-                guestBusy.add(e.getWhen());
-            }
+      ArrayList<TimeRange> guestBusy = new ArrayList<>();
+      for (Event e : events){
+        // See if they are attending the event
+        if (e.getAttendees().contains(guest)){
+          // Get the time of the event so we can mark as busy
+          guestBusy.add(e.getWhen());
         }
-        busyTimes.add(guestBusy);
+      }
+      busyTimes.add(guestBusy);
     }
     
     // Use our busy times list to find all times when our guests are NOT busy
     ArrayList<ArrayList<TimeRange>> allTimes = new ArrayList<>();
     for (ArrayList<TimeRange> guestSchedule : busyTimes){
-        allTimes.add(findAvailability(guestSchedule, duration));
+      allTimes.add(findAvailability(guestSchedule, duration));
     }
     return findIntersectionBetweenLists(allTimes, duration);
   }
@@ -68,35 +68,35 @@ public final class FindMeetingQuery {
     ArrayList<TimeRange> available = new ArrayList<>();
     // If their schedule is empty, they are free the entire day
     if (guestSchedule.size() == 0){
-        available.add(TimeRange.WHOLE_DAY);
+      available.add(TimeRange.WHOLE_DAY);
     } else {
-        Collections.sort(guestSchedule, TimeRange.ORDER_BY_START);
-        int st = 0;
-        TimeRange t = null;
-        // Find available time ranges between each event in their schedule
-        for (int i = 0; i < guestSchedule.size(); i++){
-            t = guestSchedule.get(i);
-            if (st < t.start() && t.start() - st >= duration){
-                TimeRange possible = TimeRange.fromStartEnd(st, t.start(), false);
-                boolean modified = false;
-                // Accounts for double-booked schedules. 
-                for (TimeRange x : guestSchedule){
-                    if (x.overlaps(possible)){
-                        modified = true;
-                        x = findIntersectionBetweenRanges(x, possible, duration);
-                    }
-                }
-                if (!modified){
-                    available.add(possible);
-                }
-            } else {
-                st = t.end();
+      Collections.sort(guestSchedule, TimeRange.ORDER_BY_START);
+      int st = 0;
+      TimeRange t = null;
+      // Find available time ranges between each event in their schedule
+      for (int i = 0; i < guestSchedule.size(); i++){
+        t = guestSchedule.get(i);
+        if (st < t.start() && t.start() - st >= duration){
+          TimeRange possible = TimeRange.fromStartEnd(st, t.start(), false);
+          boolean modified = false;
+          // Accounts for double-booked schedules. 
+          for (TimeRange x : guestSchedule){
+            if (x.overlaps(possible)){
+              modified = true;
+              x = findIntersectionBetweenRanges(x, possible, duration);
             }
+          }
+          if (!modified){
+            available.add(possible);
+          }
+        } else {
+          st = t.end();
         }
-            // Checks the end of the day for availability
-        if (t != null && t.end() < LATEST_TIME && LATEST_TIME - t.end() >= duration){
-            available.add(TimeRange.fromStartEnd(t.end(), LATEST_TIME, false));
-        }
+      }
+      // Checks the end of the day for availability
+      if (t != null && t.end() < LATEST_TIME && LATEST_TIME - t.end() >= duration){
+        available.add(TimeRange.fromStartEnd(t.end(), LATEST_TIME, false));
+      }
     }
     return available;
   }
@@ -108,24 +108,24 @@ public final class FindMeetingQuery {
 
     // If there is only 1 guest, return when they are available.
     if (allTimes.size() == 1){
-        return allTimes.get(0);
+      return allTimes.get(0);
     }
 
     // Check each guest with the rest of the guestlist's schedule
     for (int i = 0; i < allTimes.size() - 1; i++){
-        if (allTimes.get(i).size() > 0 && allTimes.get(i+1).size() > 0){
-            // Finds intersection between two TimeRanges. 
-            for (TimeRange t : allTimes.get(i)){
-                for (TimeRange c : allTimes.get(i + 1)){
-                    if (t.overlaps(c)){
-                        intersection.add(findIntersectionBetweenRanges(t, c, duration));
-                    }
-                }
+      if (allTimes.get(i).size() > 0 && allTimes.get(i+1).size() > 0){
+        // Finds intersection between two TimeRanges. 
+        for (TimeRange t : allTimes.get(i)){
+          for (TimeRange c : allTimes.get(i + 1)){
+            if (t.overlaps(c)){
+              intersection.add(findIntersectionBetweenRanges(t, c, duration));
             }
-        } else {
-            // If any of the guests is busy for the entire day, just return an empty list
-            return new ArrayList<>();
+          }
         }
+      } else {
+        // If any of the guests is busy for the entire day, just return an empty list
+        return new ArrayList<>();
+      }
     } 
     return intersection;
   }
@@ -134,11 +134,11 @@ public final class FindMeetingQuery {
   // Finds the shared time between two TimeRanges
   // If there is no intersection, returns null
   public TimeRange findIntersectionBetweenRanges(TimeRange a, TimeRange b, int duration){
-      int start = Math.max(a.start(), b.start()); 
-      int end = Math.min(a.end(), b.end());
-      if (end - start >= duration) {
-          return TimeRange.fromStartEnd(start, end, false);
-      } 
-      return null;
+    int start = Math.max(a.start(), b.start()); 
+    int end = Math.min(a.end(), b.end());
+    if (end - start >= duration) {
+      return TimeRange.fromStartEnd(start, end, false);
+    } 
+    return null;
   }
 }
