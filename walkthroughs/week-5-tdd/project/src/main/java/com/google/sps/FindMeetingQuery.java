@@ -20,13 +20,17 @@ import java.util.stream.Stream;
 import java.util.stream.Collectors;
 
 public final class FindMeetingQuery {
+
+  // The end of the day, i.e. 1440 minutes. 
+  private final int LATEST_TIME = TimeRange.WHOLE_DAY.end();
+
+  // Given a collection of Events and a MeetingRequest, finds all times where event could take place.
   public Collection<TimeRange> query(Collection<Event> events, MeetingRequest request) {
     Set<String> desiredGuests = new HashSet<>();
     desiredGuests.addAll(request.getAttendees());
     int duration = (int) request.getDuration();
-    int latestTime = TimeRange.WHOLE_DAY.end();
 
-    if (duration > latestTime){
+    if (duration > LATEST_TIME){
         return new ArrayList<>();
     }
     if (desiredGuests.size() == 0){
@@ -62,7 +66,6 @@ public final class FindMeetingQuery {
   // where a meeting could take place.
   public ArrayList<TimeRange> findAvailability(ArrayList<TimeRange> guestSchedule, int duration){
     ArrayList<TimeRange> available = new ArrayList<>();
-    int latestTime = TimeRange.WHOLE_DAY.end();
     // If their schedule is empty, they are free the entire day
     if (guestSchedule.size() == 0){
         available.add(TimeRange.WHOLE_DAY);
@@ -91,11 +94,11 @@ public final class FindMeetingQuery {
             }
         }
             // Checks the end of the day for availability
-        if (t != null && t.end() < latestTime && latestTime - t.end() >= duration){
-            available.add(TimeRange.fromStartEnd(t.end(), latestTime, false));
+        if (t != null && t.end() < LATEST_TIME && LATEST_TIME - t.end() >= duration){
+            available.add(TimeRange.fromStartEnd(t.end(), LATEST_TIME, false));
         }
     }
-        return available;
+    return available;
   }
 
 
