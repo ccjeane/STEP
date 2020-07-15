@@ -52,48 +52,54 @@ public final class FindMeetingQuery {
     
     // Use our busy times list to find all times when our guests are NOT busy
     ArrayList<ArrayList<TimeRange>> allTimes = new ArrayList<>();
-    for (List<TimeRange> guestSchedule : busyTimes){
-        ArrayList<TimeRange> available = new ArrayList<>();
-        // If their schedule is empty, they are free the entire day. 
-        if (guestSchedule.size() == 0){
-            available.add(TimeRange.WHOLE_DAY);
-        } else {
-            Collections.sort(guestSchedule, TimeRange.ORDER_BY_START);
-            int st = 0;
-            TimeRange t = null;
-            // Find available time ranges between each event in their schedule
-            for (int i = 0; i < guestSchedule.size(); i++){
-                t = guestSchedule.get(i);
-                if (st < t.start() && t.start() - st >= duration){
-                    TimeRange possible = TimeRange.fromStartEnd(st, t.start(), false);
-                    boolean modified = false;
-                    // Accounts for double-booked schedules. 
-                    for (TimeRange x : guestSchedule){
-                        if (x.overlaps(possible)){
-                            modified = true;
-                            x = findIntersectionBetweenRanges(x, possible, duration);
-                        }
-                    }
-                    if (!modified){
-                        available.add(possible);
-                    }
-                } else {
-                    st = t.end();
-                }
-            }
-            // Checks the end of the day for availability
-            if (t != null && t.end() < latestTime && latestTime - t.end() >= duration){
-                available.add(TimeRange.fromStartEnd(t.end(), latestTime, false));
-            }
-        }
-        allTimes.add(available);
+    for (ArrayList<TimeRange> guestSchedule : busyTimes){
+        allTimes.add(findAvailability(guestSchedule, duration));
     }
-    
-    Collection<TimeRange> intersect = findIntersectionBetweenLists(allTimes, duration);
-
-    return intersect;
+    return findIntersectionBetweenLists(allTimes, duration);
   }
 
+  // Given a guest's schedule and a meeting duration, finds all open times during schedule
+  // where a meeting could take place.
+  public ArrayList<TimeRange> findAvailability(ArrayList<TimeRange> guestSchedule, int duration){
+    ArrayList<TimeRange> available = new ArrayList<>();
+    int latestTime = TimeRange.WHOLE_DAY.end();
+    // If their schedule is empty, they are free the entire day
+    if (guestSchedule.size() == 0){
+        available.add(TimeRange.WHOLE_DAY);
+    } else {
+        Collections.sort(guestSchedule, TimeRange.ORDER_BY_START);
+        int st = 0;
+        TimeRange t = null;
+        // Find available time ranges between each event in their schedule
+        for (int i = 0; i < guestSchedule.size(); i++){
+            t = guestSchedule.get(i);
+            if (st < t.start() && t.start() - st >= duration){
+                TimeRange possible = TimeRange.fromStartEnd(st, t.start(), false);
+                boolean modified = false;
+                // Accounts for double-booked schedules. 
+                for (TimeRange x : guestSchedule){
+                    if (x.overlaps(possible)){
+                        modified = true;
+                        x = findIntersectionBetweenRanges(x, possible, duration);
+                    }
+                }
+                if (!modified){
+                    available.add(possible);
+                }
+            } else {
+                st = t.end();
+            }
+        }
+            // Checks the end of the day for availability
+        if (t != null && t.end() < latestTime && latestTime - t.end() >= duration){
+            available.add(TimeRange.fromStartEnd(t.end(), latestTime, false));
+        }
+    }
+        return available;
+  }
+
+
+  // Finds the shared open times between multiple lists
   public List<TimeRange> findIntersectionBetweenLists(ArrayList<ArrayList<TimeRange>> allTimes, int duration){
     List<TimeRange> intersection = new ArrayList<>();
 
@@ -118,7 +124,6 @@ public final class FindMeetingQuery {
             return new ArrayList<>();
         }
     } 
-    
     return intersection;
   }
 
