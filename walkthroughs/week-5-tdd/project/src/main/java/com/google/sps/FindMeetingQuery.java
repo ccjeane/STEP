@@ -35,7 +35,9 @@ public final class FindMeetingQuery {
   */
   public Collection<TimeRange> query(Collection<Event> events, MeetingRequest request) {
     Set<String> desiredGuests = new HashSet<>();
+    Set<String> possibleGuests = new HashSet<>();
     desiredGuests.addAll(request.getAttendees());
+    possibleGuests.addAll(request.getOptionalAttendees());
     int duration = (int) request.getDuration();
 
     if (duration > LATEST_TIME){
@@ -49,6 +51,28 @@ public final class FindMeetingQuery {
     int start = 0;
 
     // Find all the times when our desired attendees are busy
+    ArrayList<ArrayList<TimeRange>> busyTimes = findBusy(desiredGuests, events);
+    
+    // Use our busy times list to find all times when our guests are NOT busy
+    ArrayList<ArrayList<TimeRange>> allTimes = new ArrayList<>();
+    for (ArrayList<TimeRange> guestSchedule : busyTimes){
+      allTimes.add(findAvailability(guestSchedule, duration));
+    }
+    ArrayList<TimeRange> mandatoryGuests = findIntersectionBetweenLists(allTimes, duration);
+    if (possibleGuests.size() > 0){
+        return checkOptionalAttendance(possibleGuests, duration, events, mandatoryGuests);
+    } else {
+        return mandatoryGuests;
+    }
+  }
+
+  /* 
+   Find all the times when our desired attendees are busy
+   @param desiredGuests Takes a set of guests
+   @param events Takes a collection of events
+   @return ArrayList<ArrayList<TimeRange>> Returns a list filled with each guest's schedule
+  */ 
+  public ArrayList<ArrayList<TimeRange>> findBusy(Set<String> desiredGuests, Collection<Event> events){
     ArrayList<ArrayList<TimeRange>> busyTimes = new ArrayList<>();
     for (String guest : desiredGuests){
       ArrayList<TimeRange> guestBusy = new ArrayList<>();
@@ -61,14 +85,10 @@ public final class FindMeetingQuery {
       }
       busyTimes.add(guestBusy);
     }
-    
-    // Use our busy times list to find all times when our guests are NOT busy
-    ArrayList<ArrayList<TimeRange>> allTimes = new ArrayList<>();
-    for (ArrayList<TimeRange> guestSchedule : busyTimes){
-      allTimes.add(findAvailability(guestSchedule, duration));
-    }
-    return findIntersectionBetweenLists(allTimes, duration);
+
+    return busyTimes;
   }
+    
 
   /* 
    Given a guest's schedule, finds all open times during schedule
@@ -120,8 +140,8 @@ public final class FindMeetingQuery {
     @param duration The duration of the meeting
     @return Returns the times where all guests are available. 
   */
-  public List<TimeRange> findIntersectionBetweenLists(ArrayList<ArrayList<TimeRange>> allTimes, int duration){
-    List<TimeRange> intersection = new ArrayList<>();
+  public ArrayList<TimeRange> findIntersectionBetweenLists(ArrayList<ArrayList<TimeRange>> allTimes, int duration){
+    ArrayList<TimeRange> intersection = new ArrayList<>();
 
     // If there is only 1 guest, return when they are available.
     if (allTimes.size() == 1){
@@ -135,7 +155,10 @@ public final class FindMeetingQuery {
         for (TimeRange t : allTimes.get(i)){
           for (TimeRange c : allTimes.get(i + 1)){
             if (t.overlaps(c)){
-              intersection.add(findIntersectionBetweenRanges(t, c, duration));
+              TimeRange intersect = findIntersectionBetweenRanges(t, c, duration);
+              if (intersect != null){
+                intersection.add(intersect);
+              }
             }
           }
         }
@@ -161,5 +184,22 @@ public final class FindMeetingQuery {
       return TimeRange.fromStartEnd(start, end, false);
     } 
     return null;
+  }
+
+  public ArrayList<TimeRange> checkOptionalAttendance(Set<String> guests, int duration,
+                            Collection<Event> events, ArrayList<TimeRange> allTimes){
+    ArrayList<ArrayList<TimeRange>> busy = findBusy(guests, events);
+    ArrayList<ArrayList<TimeRange>> optionalAvailability = new ArrayList<>();
+    optionalAvailability.add(allTimes);
+    for (ArrayList<TimeRange> guestSchedule : busy){
+      optionalAvailability.add(findAvailability(guestSchedule, duration));
+    }
+
+    ArrayList<TimeRange> inclusion = findIntersectionBetweenLists(optionalAvailability, duration);
+    if (inclusion.size() > 0){
+        return inclusion;
+    } else {
+        return allTimes;
+    }
   }
 }
