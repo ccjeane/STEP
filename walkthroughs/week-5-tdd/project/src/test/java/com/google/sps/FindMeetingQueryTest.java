@@ -391,7 +391,7 @@ public final class FindMeetingQueryTest {
     // Events  : |----------A----------|
     //           |----------B----------|
     // Day     : |---------------------|
-    // Options :       |-----|
+    // Options :       
 
     Collection<Event> events = Arrays.asList(
         new Event("Event 1", TimeRange.WHOLE_DAY, Arrays.asList(PERSON_A)),

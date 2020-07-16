@@ -44,9 +44,13 @@ public final class FindMeetingQuery {
       return new ArrayList<>();
     }
     if (desiredGuests.size() == 0){
-      ArrayList<TimeRange> freeDay = new ArrayList<>();
-      freeDay.add(TimeRange.WHOLE_DAY);
-      return freeDay;
+      if (possibleGuests.size() == 0){
+        ArrayList<TimeRange> freeDay = new ArrayList<>();
+        freeDay.add(TimeRange.WHOLE_DAY);
+        return freeDay;
+      } else {
+        return checkOptionalAttendance(possibleGuests, duration, events, null);
+      }
     }
     int start = 0;
 
@@ -190,16 +194,20 @@ public final class FindMeetingQuery {
                             Collection<Event> events, ArrayList<TimeRange> allTimes){
     ArrayList<ArrayList<TimeRange>> busy = findBusy(guests, events);
     ArrayList<ArrayList<TimeRange>> optionalAvailability = new ArrayList<>();
-    optionalAvailability.add(allTimes);
+    if (allTimes != null){
+      optionalAvailability.add(allTimes);
+    }
     for (ArrayList<TimeRange> guestSchedule : busy){
       optionalAvailability.add(findAvailability(guestSchedule, duration));
     }
 
     ArrayList<TimeRange> inclusion = findIntersectionBetweenLists(optionalAvailability, duration);
     if (inclusion.size() > 0){
-        return inclusion;
+      return inclusion;
+    } else if (allTimes != null){
+      return allTimes;
     } else {
-        return allTimes;
+      return new ArrayList<>();
     }
   }
 }
