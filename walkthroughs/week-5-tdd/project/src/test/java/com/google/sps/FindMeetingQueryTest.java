@@ -301,7 +301,7 @@ public final class FindMeetingQueryTest {
     Assert.assertEquals(expected, actual);
   }
 
-    @Test
+  @Test
   public void canStillMeetWithoutOptionalAttendee() {
     // Have each person have different events. We should see two options because each person has
     // split the restricted times.
@@ -331,7 +331,7 @@ public final class FindMeetingQueryTest {
     Assert.assertEquals(expected, actual);
   }
 
-    @Test
+  @Test
   public void optionalIsIgnored() {
     // Optional attendee doesn't have enough room in their schedule
     //

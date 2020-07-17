@@ -62,11 +62,11 @@ public final class FindMeetingQuery {
     for (ArrayList<TimeRange> guestSchedule : busyTimes){
       allTimes.add(findAvailability(guestSchedule, duration));
     }
-    ArrayList<TimeRange> mandatoryGuests = findIntersectionBetweenLists(allTimes, duration);
+    ArrayList<TimeRange> potentialTimes = findIntersectionBetweenLists(allTimes, duration);
     if (possibleGuests.size() > 0){
-        return checkOptionalAttendance(possibleGuests, duration, events, mandatoryGuests);
+        return checkOptionalAttendance(possibleGuests, duration, events, potentialTimes);
     } else {
-        return mandatoryGuests;
+        return potentialTimes;
     }
   }
 
