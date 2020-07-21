@@ -76,7 +76,7 @@ public final class FindMeetingQuery {
    @param events Takes a collection of events
    @return ArrayList<ArrayList<TimeRange>> Returns a list filled with each guest's schedule
   */ 
-  public ArrayList<ArrayList<TimeRange>> findBusy(Set<String> desiredGuests, Collection<Event> events){
+  private ArrayList<ArrayList<TimeRange>> findBusy(Set<String> desiredGuests, Collection<Event> events){
     ArrayList<ArrayList<TimeRange>> busyTimes = new ArrayList<>();
     for (String guest : desiredGuests){
       ArrayList<TimeRange> guestBusy = new ArrayList<>();
@@ -101,7 +101,7 @@ public final class FindMeetingQuery {
    @param duration The length of the desired meeting
    @return ArrayList<TimeRange> Returns a list containing the TimeRanges where the meeting could occur
   */
-  public ArrayList<TimeRange> findAvailability(ArrayList<TimeRange> guestSchedule, int duration){
+  private ArrayList<TimeRange> findAvailability(ArrayList<TimeRange> guestSchedule, int duration){
     ArrayList<TimeRange> available = new ArrayList<>();
     // If their schedule is empty, they are free the entire day
     if (guestSchedule.size() == 0){
@@ -144,7 +144,7 @@ public final class FindMeetingQuery {
     @param duration The duration of the meeting
     @return Returns the times where all guests are available. 
   */
-  public ArrayList<TimeRange> findIntersectionBetweenLists(ArrayList<ArrayList<TimeRange>> allTimes, int duration){
+  private ArrayList<TimeRange> findIntersectionBetweenLists(ArrayList<ArrayList<TimeRange>> allTimes, int duration){
     ArrayList<TimeRange> intersection = new ArrayList<>();
 
     // If there is only 1 guest, return when they are available.
@@ -181,7 +181,7 @@ public final class FindMeetingQuery {
    @param b The second TimeRange
    @return TimeRange Returns where the two TimeRanges overlap, or null if they do not.
   */
-  public TimeRange findIntersectionBetweenRanges(TimeRange a, TimeRange b, int duration){
+  private TimeRange findIntersectionBetweenRanges(TimeRange a, TimeRange b, int duration){
     int start = Math.max(a.start(), b.start()); 
     int end = Math.min(a.end(), b.end());
     if (end - start >= duration) {
@@ -190,7 +190,7 @@ public final class FindMeetingQuery {
     return null;
   }
 
-  public ArrayList<TimeRange> checkOptionalAttendance(Set<String> guests, int duration,
+  private ArrayList<TimeRange> checkOptionalAttendance(Set<String> guests, int duration,
                             Collection<Event> events, ArrayList<TimeRange> allTimes){
     ArrayList<ArrayList<TimeRange>> busy = findBusy(guests, events);
     ArrayList<ArrayList<TimeRange>> optionalAvailability = new ArrayList<>();
