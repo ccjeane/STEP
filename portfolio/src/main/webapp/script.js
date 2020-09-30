@@ -17,10 +17,10 @@
  */
 function addRandomFact() {
   const facts =
-      ['Movie: The Lion King', 'Color: Burgundy', 'Show: How I Met Your Mother / Criminal Minds', 'Food: Spaghetti', 'Drink: Iced Coffee',
+      ['Movie: Zodiac', 'Color: Burgundy', 'Show: How I Met Your Mother / Criminal Minds', 'Food: Spaghetti', 'Drink: Iced Coffee',
         'Time of Day: Morning', 'Season: Late Spring', 'Place visited: Italy or Hawaii', 'Music Genre: Hip hop',
         'Rapper: Drake', 'Scenery: Beach', 'Activity: Photography', 'Sport with a ball: Golf', 'Sport without a ball: Cheerleading/Gymnastics',
-        'Shoes: Nike Air Force One\'s'];
+        'Shoes: Nike Air Force One\'s', 'Comedian: John Mulaney'];
 
   // Pick a random greeting.
   const fact = facts[Math.floor(Math.random() * facts.length)];
